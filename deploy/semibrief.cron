@@ -1,0 +1,4 @@
+# Singapore does not observe daylight saving time; 08:00 SGT is 00:00 UTC.
+CRON_TZ=Asia/Singapore
+0 8 * * * cd /opt/semiconductor-news-brief && /usr/bin/flock -n /run/lock/semibrief-cron.lock /usr/bin/docker compose run --rm semibrief run >> /var/log/semibrief.log 2>&1
+

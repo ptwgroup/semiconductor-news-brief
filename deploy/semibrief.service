@@ -1,0 +1,13 @@
+[Unit]
+Description=Daily semiconductor news brief
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/semiconductor-news-brief
+ExecStart=/usr/bin/flock -n /run/lock/semibrief.lock /usr/bin/docker compose run --rm semibrief run
+TimeoutStartSec=20min
+Nice=10
+NoNewPrivileges=true
+

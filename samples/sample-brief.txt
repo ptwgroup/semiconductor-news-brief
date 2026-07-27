@@ -1,0 +1,23 @@
+Daily Semiconductor News Brief — 2026-07-27
+Coverage window: 2026-07-26 08:00 to 2026-07-27 08:00 SGT
+
+EXECUTIVE TAKEAWAYS
+- Packaging: Advanced-packaging expansion remains central to AI accelerator supply.
+- Policy/Trade: Export-control changes may redirect equipment shipments and fab plans.
+- Memory: HBM capacity and qualification continue to shape AI-system availability.
+
+TOP DEVELOPMENTS
+
+[HIGH] [Packaging] TSMC expands advanced packaging capacity for HBM systems
+- TSMC plans additional advanced packaging capacity.
+- The expansion is intended to support rising demand for AI accelerators and high-bandwidth memory systems.
+- Why it matters: Could change advanced-packaging capacity and accelerator supply.
+- Source: Fixture Semiconductor News — https://example.com/tsmc-packaging
+
+[HIGH] [Policy/Trade] New chip export controls reshape equipment shipments
+- The rules change licensing requirements for selected semiconductor equipment shipments.
+- Why it matters: May change market access, sourcing choices, or compliance costs.
+- Source: Fixture Reuters — https://example.com/export-controls
+
+Sources monitored: 30 | Articles reviewed: 94 | Stories selected: 2
+

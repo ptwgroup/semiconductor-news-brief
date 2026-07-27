@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Fixture Semiconductor News</title>
+    <item>
+      <title>TSMC expands advanced packaging capacity for HBM systems</title>
+      <link>https://example.com/tsmc-packaging?utm_source=test</link>
+      <description>TSMC plans additional advanced packaging capacity. The expansion is intended to support rising demand for AI accelerators and high-bandwidth memory systems.</description>
+      <pubDate>Mon, 27 Jul 2026 00:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Routine phone review uses a faster chip</title>
+      <link>https://example.com/phone-review</link>
+      <description>A consumer gadget review with no material supply-chain consequence.</description>
+      <pubDate>Mon, 27 Jul 2026 00:20:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
+

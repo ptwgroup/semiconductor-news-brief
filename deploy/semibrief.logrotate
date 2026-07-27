@@ -1,0 +1,9 @@
+/var/log/semibrief.log {
+    weekly
+    rotate 8
+    compress
+    missingok
+    notifempty
+    copytruncate
+}
+

@@ -1,0 +1,74 @@
+discovery:
+  gdelt:
+    enabled: true
+    endpoint: https://api.gdeltproject.org/api/v2/doc/doc
+    max_records: 250
+    query: >
+      ("semiconductor" OR "semiconductors" OR "chipmaker" OR "chip factory"
+      OR "wafer fab" OR "advanced packaging" OR "HBM" OR "chip export controls")
+  google_news:
+    # Optional fallback. Disabled because results often use aggregator URLs
+    # instead of canonical publisher URLs.
+    enabled: false
+    language: en
+    country: SG
+    queries:
+      - semiconductor industry when:1d
+      - chip export controls when:1d
+      - semiconductor fab investment when:1d
+      - HBM advanced packaging when:1d
+
+quality:
+  allow_unlisted_publishers: false
+
+publishers:
+  - {name: Taipei Times, domain: taipeitimes.com, region: Taiwan, priority: 4}
+  - {name: DigiTimes, domain: digitimes.com, region: Taiwan, priority: 5}
+  - {name: Korea Herald, domain: koreaherald.com, region: South Korea, priority: 4}
+  - {name: Yonhap, domain: yna.co.kr, region: South Korea, priority: 4}
+  - {name: South China Morning Post, domain: scmp.com, region: China, priority: 5}
+  - {name: China Daily, domain: chinadaily.com.cn, region: China, priority: 2}
+  - {name: Straits Times, domain: straitstimes.com, region: Singapore, priority: 4}
+  - {name: The Star, domain: thestar.com.my, region: Malaysia, priority: 3}
+  - {name: Handelsblatt, domain: handelsblatt.com, region: Germany, priority: 5}
+  - {name: Reuters, domain: reuters.com, region: Global, priority: 5}
+  - {name: Financial Times, domain: ft.com, region: Global, priority: 5}
+  - {name: EE Times, domain: eetimes.com, region: United States, priority: 5}
+  - {name: Semiconductor Engineering, domain: semiengineering.com, region: United States, priority: 5}
+  - {name: IEEE Spectrum, domain: spectrum.ieee.org, region: United States, priority: 4}
+  - {name: Semiconductor Industry Association, domain: semiconductors.org, region: United States, priority: 5}
+  - {name: EE Times Europe, domain: eetimes.eu, region: Europe, priority: 5}
+  - {name: Politico Europe, domain: politico.eu, region: Europe, priority: 4}
+  - {name: European Commission, domain: ec.europa.eu, region: Europe, priority: 5}
+  - {name: SEMI, domain: semi.org, region: Global, priority: 5}
+  - {name: Silicon Europe, domain: silicon-europe.eu, region: Europe, priority: 3}
+  - {name: Les Echos, domain: lesechos.fr, region: France, priority: 4}
+  - {name: Le Monde, domain: lemonde.fr, region: France, priority: 4}
+  - {name: The Register, domain: theregister.com, region: United Kingdom, priority: 3}
+  - {name: Il Sole 24 Ore, domain: ilsole24ore.com, region: Italy, priority: 4}
+  - {name: Neue Zürcher Zeitung, domain: nzz.ch, region: Switzerland, priority: 4}
+  - {name: Dagens Industri, domain: di.se, region: Sweden, priority: 4}
+  - {name: Het Financieele Dagblad, domain: fd.nl, region: Netherlands, priority: 4}
+  - {name: imec, domain: imec-int.com, region: Belgium, priority: 5}
+
+direct_feeds:
+  - name: EE Times
+    url: https://www.eetimes.com/feed/
+    region: United States
+    priority: 5
+  - name: Semiconductor Engineering
+    url: https://semiengineering.com/feed/
+    region: United States
+    priority: 5
+  - name: IEEE Spectrum
+    url: https://spectrum.ieee.org/feeds/feed.rss
+    region: United States
+    priority: 4
+  - name: European Commission
+    url: https://ec.europa.eu/commission/presscorner/api/rss?language=en
+    region: Europe
+    priority: 5
+
+linkedin:
+  enabled: true
+  urls_file: linkedin_urls.yml

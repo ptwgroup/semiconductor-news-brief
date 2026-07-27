@@ -1,0 +1,13 @@
+.env
+.env.local
+.venv/
+__pycache__/
+.pytest_cache/
+.coverage
+.coverage.*
+.mypy_cache/
+.ruff_cache/
+*.pyc
+data/
+logs/
+out/

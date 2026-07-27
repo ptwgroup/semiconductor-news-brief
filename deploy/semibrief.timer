@@ -1,0 +1,12 @@
+[Unit]
+Description=Send the semiconductor brief at 08:00 Singapore time
+
+[Timer]
+OnCalendar=*-*-* 00:00:00 UTC
+Persistent=true
+RandomizedDelaySec=30
+Unit=semibrief.service
+
+[Install]
+WantedBy=timers.target
+

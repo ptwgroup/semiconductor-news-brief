@@ -1,0 +1,10 @@
+# Add direct public LinkedIn post URLs here. The application does not log in,
+# crawl profiles, or bypass LinkedIn access controls.
+posts: []
+# Example:
+# posts:
+#   - url: https://www.linkedin.com/posts/example
+#     account: Example Semiconductor Company
+#     official: true
+#     region: Europe
+

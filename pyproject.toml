@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "semibrief"
+version = "0.1.0"
+description = "Zero-LLM-cost daily semiconductor news brief"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+  "beautifulsoup4>=4.13,<5",
+  "feedparser>=6.0.12,<7",
+  "httpx>=0.28,<1",
+  "PyYAML>=6.0,<7",
+  "tzdata>=2025.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.15,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.11,<1",
+  "types-PyYAML>=6.0",
+]
+
+[project.scripts]
+semibrief = "semibrief.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/semibrief"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["semibrief"]

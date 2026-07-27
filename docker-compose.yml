@@ -1,0 +1,26 @@
+services:
+  semibrief:
+    build: .
+    image: semibrief:local
+    env_file:
+      - .env
+    volumes:
+      - semibrief-data:/data
+      - ./config:/app/config:ro
+    restart: "no"
+
+  # Optional zero-token local translation. Start only if needed:
+  # docker compose --profile translation up -d libretranslate
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    profiles: ["translation"]
+    environment:
+      LT_LOAD_ONLY: en,de,fr,it,sv,zh,ko
+    volumes:
+      - libretranslate-data:/home/libretranslate/.local
+    restart: unless-stopped
+
+volumes:
+  semibrief-data:
+  libretranslate-data:
+

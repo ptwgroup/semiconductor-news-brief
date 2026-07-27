@@ -1,0 +1,37 @@
+priority_companies:
+  - TSMC
+  - Samsung Electronics
+  - SK hynix
+  - Intel
+  - NVIDIA
+  - AMD
+  - ASML
+  - Applied Materials
+  - Lam Research
+  - KLA
+  - Micron
+  - Infineon
+  - STMicroelectronics
+  - NXP
+  - GlobalFoundries
+priority_topics:
+  - foundry
+  - advanced packaging
+  - HBM
+  - semiconductor equipment
+  - export controls
+  - automotive semiconductors
+priority_regions:
+  - Taiwan
+  - South Korea
+  - China
+  - Singapore
+  - Malaysia
+  - United States
+  - Europe
+excluded_topics:
+  - cryptocurrency price
+  - consumer gadget review
+maximum_stories: 10
+preferred_detail: concise
+
