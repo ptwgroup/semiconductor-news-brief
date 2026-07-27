@@ -11,6 +11,66 @@ from .models import Article
 from .util import clean_text, fingerprint, headline_similarity
 
 TOPIC_RULES: dict[str, tuple[str, ...]] = {
+    "Mature Nodes": (
+        "mature node",
+        "legacy node",
+        "essential chip",
+        "40nm",
+        "45nm",
+        "48nm",
+        "55nm",
+        "65nm",
+        "90nm",
+        "110nm",
+        "130nm",
+        "180nm",
+        "200mm",
+    ),
+    "MEMS & Sensors": (
+        "mems",
+        "microelectromechanical",
+        "accelerometer",
+        "gyroscope",
+        "pressure sensor",
+        "image sensor",
+        "mems microphone",
+        "timing device",
+    ),
+    "Power Devices": (
+        "power semiconductor",
+        "silicon carbide",
+        "sic",
+        "gallium nitride",
+        "gan",
+        "igbt",
+        "mosfet",
+        "superjunction",
+        "power management",
+        "pmic",
+        "high voltage",
+    ),
+    "Analog/Mixed-Signal": (
+        "analog",
+        "mixed-signal",
+        "mixed signal",
+        "specialty cmos",
+        "bcd",
+        "rf cmos",
+        "sige",
+        "microcontroller",
+        "mcu",
+        "embedded non-volatile",
+        "eeprom",
+    ),
+    "Photonics/RF": (
+        "photonics",
+        "optoelectronics",
+        "rf semiconductor",
+        "radio frequency",
+        "gaas",
+        "indium phosphide",
+        "inp",
+    ),
     "Policy/Trade": ("export control", "sanction", "tariff", "chips act", "subsid"),
     "Foundry": ("foundry", "fab", "process node", "nanometer", "wafer"),
     "Memory": ("dram", "nand", "hbm", "memory"),
@@ -22,6 +82,24 @@ TOPIC_RULES: dict[str, tuple[str, ...]] = {
     "Earnings": ("earnings", "revenue", "forecast", "guidance", "profit"),
     "M&A": ("acquisition", "merger", "takeover", "buyout"),
 }
+
+CLASSIFICATION_ORDER = (
+    "MEMS & Sensors",
+    "Power Devices",
+    "Mature Nodes",
+    "Analog/Mixed-Signal",
+    "Photonics/RF",
+    "Policy/Trade",
+    "Automotive",
+    "Materials",
+    "Packaging",
+    "Equipment",
+    "Memory",
+    "AI Chips",
+    "Foundry",
+    "Earnings",
+    "M&A",
+)
 
 IMPACT_TERMS = {
     "shutdown": 3.0,
@@ -37,6 +115,15 @@ IMPACT_TERMS = {
     "shortage": 1.5,
     "hbm": 1.5,
     "euv": 1.5,
+    "mature node": 2.0,
+    "specialty cmos": 2.0,
+    "mems": 2.0,
+    "power semiconductor": 2.0,
+    "silicon carbide": 1.8,
+    "gallium nitride": 1.8,
+    "analog": 1.5,
+    "mixed-signal": 1.5,
+    "200mm": 1.5,
     "semiconductor": 1.0,
     "chip": 0.8,
 }
@@ -84,11 +171,13 @@ def translate_if_needed(
 
 def classify(article: Article) -> str:
     title = article.title.lower()
-    for tag, terms in TOPIC_RULES.items():
+    for tag in CLASSIFICATION_ORDER:
+        terms = TOPIC_RULES[tag]
         if any(term in title for term in terms):
             return tag
     haystack = f"{article.title} {article.summary}".lower()
-    for tag, terms in TOPIC_RULES.items():
+    for tag in CLASSIFICATION_ORDER:
+        terms = TOPIC_RULES[tag]
         if any(term in haystack for term in terms):
             return tag
     return "Supply Chain"
@@ -175,6 +264,64 @@ def apply_feedback(articles: list[Article], rules: list[tuple[str, str]]) -> lis
     return sorted(articles, key=lambda item: item.score, reverse=True)
 
 
+SPECIALTY_TAGS = {
+    "Mature Nodes",
+    "MEMS & Sensors",
+    "Power Devices",
+    "Analog/Mixed-Signal",
+    "Photonics/RF",
+    "Automotive",
+    "Materials",
+}
+
+LEADING_EDGE_TERMS = {
+    "1.4nm",
+    "1.6nm",
+    "2nm",
+    "3nm",
+    "high-na euv",
+    "hbm",
+    "ai accelerator",
+    "gpu",
+}
+
+
+def select_balanced(
+    articles: list[Article],
+    maximum: int,
+    mature_specialty_minimum: int,
+    leading_edge_maximum: int,
+) -> list[Article]:
+    ranked = sorted(articles, key=lambda item: item.score, reverse=True)
+    specialty = [item for item in ranked if item.tag in SPECIALTY_TAGS]
+    selected = specialty[: min(maximum, mature_specialty_minimum)]
+    selected_ids = {item.fingerprint for item in selected}
+    leading_count = 0
+
+    for article in ranked:
+        if len(selected) >= maximum:
+            break
+        if article.fingerprint in selected_ids:
+            continue
+        haystack = f"{article.title} {article.summary}".lower()
+        is_leading = any(term in haystack for term in LEADING_EDGE_TERMS)
+        if is_leading and leading_count >= leading_edge_maximum:
+            continue
+        selected.append(article)
+        selected_ids.add(article.fingerprint)
+        if is_leading:
+            leading_count += 1
+
+    if len(selected) < maximum:
+        for article in ranked:
+            if len(selected) >= maximum:
+                break
+            if article.fingerprint not in selected_ids:
+                selected.append(article)
+                selected_ids.add(article.fingerprint)
+    return selected
+
+
 def extractive_bullets(article: Article, limit: int = 2) -> list[str]:
     text = clean_text(article.summary)
     sentences = [
@@ -203,6 +350,24 @@ def why_it_matters(article: Article) -> str:
         "Memory": "May affect memory availability, pricing, and AI-system build costs.",
         "Equipment": "Could influence fab expansion timing and leading-edge production capability.",
         "Materials": "May affect upstream availability, qualification timelines, and wafer costs.",
+        "Mature Nodes": (
+            "May affect long-lifecycle capacity, utilization, pricing, and second-source options."
+        ),
+        "MEMS & Sensors": (
+            "May affect sensor availability, qualification cycles, packaging, "
+            "and application demand."
+        ),
+        "Power Devices": (
+            "May affect automotive, industrial, energy, and data-center "
+            "power-system cost or supply."
+        ),
+        "Analog/Mixed-Signal": (
+            "May affect control, interface, power-management, and long-lifecycle product supply."
+        ),
+        "Photonics/RF": (
+            "May affect optical connectivity, communications, sensing, "
+            "and specialist material demand."
+        ),
         "Packaging": "Could change advanced-packaging capacity and accelerator supply.",
         "AI Chips": (
             "May shift accelerator supply, performance competition, or data-center spending."

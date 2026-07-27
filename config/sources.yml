@@ -5,7 +5,10 @@ discovery:
     max_records: 250
     query: >
       ("semiconductor" OR "semiconductors" OR "chipmaker" OR "chip factory"
-      OR "wafer fab" OR "advanced packaging" OR "HBM" OR "chip export controls")
+      OR "wafer fab" OR "mature node" OR "legacy node" OR "specialty CMOS"
+      OR "analog semiconductor" OR "mixed signal" OR "power semiconductor"
+      OR "silicon carbide" OR "gallium nitride" OR "MEMS" OR "sensor fab"
+      OR "IGBT" OR "MOSFET" OR "microcontroller" OR "200mm fab")
   google_news:
     # Optional fallback. Disabled because results often use aggregator URLs
     # instead of canonical publisher URLs.
@@ -17,6 +20,9 @@ discovery:
       - chip export controls when:1d
       - semiconductor fab investment when:1d
       - HBM advanced packaging when:1d
+      - mature node analog power semiconductor when:1d
+      - MEMS sensor semiconductor when:1d
+      - SiC GaN IGBT MOSFET when:1d
 
 quality:
   allow_unlisted_publishers: false
@@ -50,6 +56,29 @@ publishers:
   - {name: Dagens Industri, domain: di.se, region: Sweden, priority: 4}
   - {name: Het Financieele Dagblad, domain: fd.nl, region: Netherlands, priority: 4}
   - {name: imec, domain: imec-int.com, region: Belgium, priority: 5}
+  - {name: Compound Semiconductor, domain: compoundsemiconductor.net, region: Europe, priority: 5}
+  - {name: Semiconductor Today, domain: semiconductor-today.com, region: Europe, priority: 5}
+  - {name: Power Electronics News, domain: powerelectronicsnews.com, region: Global, priority: 4}
+  - {name: Power Electronics World, domain: powerelectronicsworld.net, region: Europe, priority: 4}
+  - {name: eeNews Europe, domain: eenewseurope.com, region: Europe, priority: 4}
+  - {name: Electronics Weekly, domain: electronicsweekly.com, region: United Kingdom, priority: 4}
+  - {name: EDN, domain: edn.com, region: United States, priority: 4}
+  - {name: Electronic Design, domain: electronicdesign.com, region: United States, priority: 4}
+  - {name: MEMS Journal, domain: memsjournal.com, region: United States, priority: 4}
+  - {name: CSA Catapult, domain: csa.catapult.org.uk, region: United Kingdom, priority: 4}
+  - {name: Infineon, domain: infineon.com, region: Germany, priority: 5}
+  - {name: STMicroelectronics, domain: st.com, region: Europe, priority: 5}
+  - {name: NXP, domain: nxp.com, region: Europe, priority: 5}
+  - {name: Texas Instruments, domain: ti.com, region: United States, priority: 5}
+  - {name: Analog Devices, domain: analog.com, region: United States, priority: 5}
+  - {name: onsemi, domain: onsemi.com, region: United States, priority: 5}
+  - {name: Renesas, domain: renesas.com, region: Japan, priority: 5}
+  - {name: ROHM, domain: rohm.com, region: Japan, priority: 5}
+  - {name: Wolfspeed, domain: wolfspeed.com, region: United States, priority: 5}
+  - {name: GlobalFoundries, domain: gf.com, region: United States, priority: 5}
+  - {name: UMC, domain: umc.com, region: Taiwan, priority: 5}
+  - {name: Tower Semiconductor, domain: towersemi.com, region: Israel, priority: 5}
+  - {name: X-FAB, domain: xfab.com, region: Europe, priority: 5}
 
 direct_feeds:
   - name: EE Times

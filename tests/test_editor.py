@@ -7,6 +7,7 @@ from semibrief.editor import (
     extractive_bullets,
     prepare_articles,
     score_article,
+    select_balanced,
 )
 from semibrief.models import Article
 
@@ -29,6 +30,12 @@ def article(title: str, url: str = "https://example.com/a") -> Article:
 
 def test_classification() -> None:
     assert classify(article("ASML expands EUV equipment output")) == "Equipment"
+
+
+def test_specialty_classification() -> None:
+    assert classify(article("New 200mm SiC power semiconductor fab ramps")) == "Power Devices"
+    assert classify(article("MEMS pressure sensor capacity expands")) == "MEMS & Sensors"
+    assert classify(article("Foundry adds 180nm BCD process")) == "Mature Nodes"
 
 
 def test_material_story_scores_high() -> None:
@@ -71,3 +78,25 @@ def test_feedback_adjusts_similar_story() -> None:
     result = apply_feedback([item], [("TSMC plans packaging capacity expansion", "more_like_this")])
     assert result[0].score == 9.5
     assert result[0].impact == "HIGH"
+
+
+def test_balanced_selection_protects_specialty_coverage() -> None:
+    items = []
+    for index in range(7):
+        item = article(f"AI GPU HBM story {index}", f"https://leading.test/{index}")
+        item.fingerprint = f"leading-{index}"
+        item.tag = "AI Chips"
+        item.score = 20 - index
+        items.append(item)
+    for index in range(6):
+        item = article(
+            f"180nm analog MEMS customer story {index}",
+            f"https://specialty.test/{index}",
+        )
+        item.fingerprint = f"specialty-{index}"
+        item.tag = "Mature Nodes"
+        item.score = 10 - index
+        items.append(item)
+    result = select_balanced(items, 10, 6, 3)
+    assert sum(item.tag == "Mature Nodes" for item in result) == 6
+    assert sum(item.tag == "AI Chips" for item in result) == 4

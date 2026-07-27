@@ -14,13 +14,43 @@ priority_companies:
   - STMicroelectronics
   - NXP
   - GlobalFoundries
+  - Texas Instruments
+  - Analog Devices
+  - onsemi
+  - Renesas
+  - ROHM
+  - Wolfspeed
+  - Bosch Sensortec
+  - Tower Semiconductor
+  - UMC
+  - X-FAB
+  - Vanguard International Semiconductor
 priority_topics:
-  - foundry
-  - advanced packaging
-  - HBM
-  - semiconductor equipment
-  - export controls
+  - mature node
+  - 40nm
+  - 45nm
+  - 55nm
+  - 65nm
+  - 90nm
+  - 130nm
+  - 180nm
+  - specialty CMOS
+  - analog and mixed-signal
+  - MEMS
+  - sensors
+  - power semiconductors
+  - silicon carbide
+  - gallium nitride
+  - IGBT
+  - MOSFET
+  - BCD
+  - RF CMOS
+  - microcontrollers
+  - automotive qualification
+  - 200mm fabs
+  - equipment and materials
   - automotive semiconductors
+  - industrial semiconductors
 priority_regions:
   - Taiwan
   - South Korea
@@ -34,4 +64,7 @@ excluded_topics:
   - consumer gadget review
 maximum_stories: 10
 preferred_detail: concise
-
+coverage_mix:
+  # Mature/specialty stories are the core brief, not a secondary appendix.
+  mature_specialty_minimum: 6
+  leading_edge_maximum: 3

@@ -19,7 +19,12 @@ from .discovery import (
     fetch_linkedin_urls,
     google_news_url,
 )
-from .editor import apply_feedback, prepare_articles, translate_if_needed
+from .editor import (
+    apply_feedback,
+    prepare_articles,
+    select_balanced,
+    translate_if_needed,
+)
 from .mailer import send_brief
 from .models import Article, Brief
 from .render import build_brief
@@ -143,7 +148,13 @@ class Pipeline:
         prepared = apply_feedback(prepared, self.db.feedback_rules())
         fresh = [article for article in prepared if not self.db.was_sent(article.fingerprint)]
         limit = int(self.interests.get("maximum_stories", 10))
-        selected = fresh[:limit]
+        mix = self.interests.get("coverage_mix", {})
+        selected = select_balanced(
+            fresh,
+            maximum=limit,
+            mature_specialty_minimum=int(mix.get("mature_specialty_minimum", 6)),
+            leading_edge_maximum=int(mix.get("leading_edge_maximum", 3)),
+        )
         source_count = (
             len(self.sources.get("publishers", [])) + len(self.sources.get("direct_feeds", [])) + 1
         )

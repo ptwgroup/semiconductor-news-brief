@@ -2,22 +2,32 @@ Daily Semiconductor News Brief — 2026-07-27
 Coverage window: 2026-07-26 08:00 to 2026-07-27 08:00 SGT
 
 EXECUTIVE TAKEAWAYS
-- Packaging: Advanced-packaging expansion remains central to AI accelerator supply.
-- Policy/Trade: Export-control changes may redirect equipment shipments and fab plans.
-- Memory: HBM capacity and qualification continue to shape AI-system availability.
+- Mature Nodes: 200 mm utilization and Chinese capacity additions are increasing price pressure.
+- Power Devices: SiC and GaN expansion continues, but automotive qualification limits substitution.
+- Packaging: AI demand remains relevant through its pull on power, sensing and supporting capacity.
 
-TOP DEVELOPMENTS
+CORE CUSTOMER TECHNOLOGIES — 40/45 NM AND ABOVE & SPECIALTY
+
+[HIGH] [Mature Nodes] Foundry adds 180 nm BCD capacity for automotive power management
+- The new line targets long-lifecycle analog, high-voltage and embedded-control applications.
+- Customer relevance: May affect long-lifecycle capacity, utilization, pricing, and second-source options.
+- Source: Fixture Industry News — https://example.com/180nm-bcd
+
+[HIGH] [Power Devices] Supplier qualifies new 200 mm silicon-carbide device line
+- The expansion targets automotive traction, industrial drives and data-center power conversion.
+- Customer relevance: May affect automotive, industrial, energy, and data-center power-system cost or supply.
+- Source: Fixture Power News — https://example.com/200mm-sic
+
+[WATCH] [MEMS & Sensors] MEMS pressure-sensor capacity expands for industrial applications
+- The supplier expects qualification and customer ramp activity during the next two quarters.
+- Customer relevance: May affect sensor availability, qualification cycles, packaging, and application demand.
+- Source: Fixture MEMS News — https://example.com/mems-pressure
+
+LEADING-EDGE AND MARKET CONTEXT
 
 [HIGH] [Packaging] TSMC expands advanced packaging capacity for HBM systems
-- TSMC plans additional advanced packaging capacity.
 - The expansion is intended to support rising demand for AI accelerators and high-bandwidth memory systems.
 - Why it matters: Could change advanced-packaging capacity and accelerator supply.
 - Source: Fixture Semiconductor News — https://example.com/tsmc-packaging
 
-[HIGH] [Policy/Trade] New chip export controls reshape equipment shipments
-- The rules change licensing requirements for selected semiconductor equipment shipments.
-- Why it matters: May change market access, sourcing choices, or compliance costs.
-- Source: Fixture Reuters — https://example.com/export-controls
-
-Sources monitored: 30 | Articles reviewed: 94 | Stories selected: 2
-
+Sources monitored: 56 | Articles reviewed: 94 | Stories selected: 4
