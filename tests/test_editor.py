@@ -38,6 +38,23 @@ def test_specialty_classification() -> None:
     assert classify(article("Foundry adds 180nm BCD process")) == "Mature Nodes"
 
 
+def test_packaging_and_front_end_classification() -> None:
+    assert (
+        classify(article("New fan-out RDL process reduces package warpage"))
+        == "Packaging Technology"
+    )
+    assert (
+        classify(article("Wafer cleaning and dry etch process control improves yield"))
+        == "Front-End Process"
+    )
+
+
+def test_short_acronyms_do_not_match_inside_words() -> None:
+    item = article("The physical economy is changing")
+    item.summary = ""
+    assert classify(item) == "Supply Chain"
+
+
 def test_material_story_scores_high() -> None:
     item = article("TSMC invests $5 billion in new semiconductor fab capacity")
     score = score_article(
@@ -100,3 +117,44 @@ def test_balanced_selection_protects_specialty_coverage() -> None:
     result = select_balanced(items, 10, 6, 3)
     assert sum(item.tag == "Mature Nodes" for item in result) == 6
     assert sum(item.tag == "AI Chips" for item in result) == 4
+
+
+def test_balanced_selection_appends_packaging_and_technology() -> None:
+    items = []
+    for index in range(5):
+        item = article(f"180nm customer story {index}", f"https://core.test/{index}")
+        item.fingerprint = f"core-{index}"
+        item.tag = "Mature Nodes"
+        item.score = 20 - index
+        items.append(item)
+    for index in range(5):
+        item = article(f"General market story {index}", f"https://market.test/{index}")
+        item.fingerprint = f"market-{index}"
+        item.tag = "Supply Chain"
+        item.score = 15 - index
+        items.append(item)
+    for tag, count, stem in (
+        ("Packaging Technology", 2, "packaging"),
+        ("Front-End Process", 3, "front-end"),
+    ):
+        for index in range(count):
+            item = article(f"{stem} story {index}", f"https://{stem}.test/{index}")
+            item.fingerprint = f"{stem}-{index}"
+            item.tag = tag
+            item.score = 10 - index
+            items.append(item)
+    result = select_balanced(
+        items,
+        10,
+        5,
+        2,
+        packaging_addendum_maximum=2,
+        technology_addendum_maximum=3,
+    )
+    assert len(result) == 15
+    assert (
+        sum(item.tag not in {"Packaging Technology", "Front-End Process"} for item in result) == 10
+    )
+    assert sum(item.tag == "Mature Nodes" for item in result) == 5
+    assert sum(item.tag == "Packaging Technology" for item in result) == 2
+    assert sum(item.tag == "Front-End Process" for item in result) == 3

@@ -51,6 +51,24 @@ priority_topics:
   - equipment and materials
   - automotive semiconductors
   - industrial semiconductors
+  - semiconductor packaging
+  - wafer-level packaging
+  - fan-out packaging
+  - redistribution layer
+  - die attach
+  - wire bonding
+  - flip chip
+  - underfill
+  - package warpage
+  - front-end process
+  - wafer cleaning
+  - etch
+  - deposition
+  - ion implantation
+  - CMP
+  - process control
+  - metrology
+  - defect inspection
 priority_regions:
   - Taiwan
   - South Korea
@@ -62,9 +80,12 @@ priority_regions:
 excluded_topics:
   - cryptocurrency price
   - consumer gadget review
+# Maximum for the general brief. The two technology addenda are additional.
 maximum_stories: 10
 preferred_detail: concise
 coverage_mix:
   # Mature/specialty stories are the core brief, not a secondary appendix.
-  mature_specialty_minimum: 6
-  leading_edge_maximum: 3
+  mature_specialty_minimum: 5
+  leading_edge_maximum: 2
+  packaging_addendum_maximum: 3
+  technology_addendum_maximum: 3

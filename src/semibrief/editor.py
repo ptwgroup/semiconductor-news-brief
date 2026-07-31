@@ -76,7 +76,49 @@ TOPIC_RULES: dict[str, tuple[str, ...]] = {
     "Memory": ("dram", "nand", "hbm", "memory"),
     "Equipment": ("lithography", "euv", "equipment", "asml", "applied materials", "kla"),
     "Materials": ("silicon wafer", "photoresist", "chemical", "substrate", "gas"),
-    "Packaging": ("packaging", "chiplet", "osat", "hybrid bonding"),
+    "Packaging Technology": (
+        "semiconductor packaging",
+        "advanced packaging",
+        "chiplet",
+        "osat",
+        "hybrid bonding",
+        "wafer-level packaging",
+        "wafer level packaging",
+        "panel-level packaging",
+        "fan-out",
+        "fan out",
+        "redistribution layer",
+        "rdl",
+        "die attach",
+        "wire bond",
+        "flip chip",
+        "underfill",
+        "molding compound",
+        "package warpage",
+        "package substrate",
+    ),
+    "Front-End Process": (
+        "front-end process",
+        "front end process",
+        "front-end manufacturing",
+        "wafer cleaning",
+        "wet clean",
+        "dry etch",
+        "plasma etch",
+        "atomic layer etch",
+        "atomic layer deposition",
+        "chemical vapor deposition",
+        "physical vapor deposition",
+        "ion implantation",
+        "diffusion furnace",
+        "thermal oxidation",
+        "chemical mechanical planarization",
+        "cmp process",
+        "process control",
+        "wafer metrology",
+        "defect inspection",
+        "photolithography",
+    ),
     "AI Chips": ("accelerator", "gpu", "ai chip", "data center", "nvidia"),
     "Automotive": ("automotive", "vehicle", "car chip"),
     "Earnings": ("earnings", "revenue", "forecast", "guidance", "profit"),
@@ -91,8 +133,9 @@ CLASSIFICATION_ORDER = (
     "Photonics/RF",
     "Policy/Trade",
     "Automotive",
+    "Packaging Technology",
+    "Front-End Process",
     "Materials",
-    "Packaging",
     "Equipment",
     "Memory",
     "AI Chips",
@@ -124,6 +167,16 @@ IMPACT_TERMS = {
     "analog": 1.5,
     "mixed-signal": 1.5,
     "200mm": 1.5,
+    "wafer cleaning": 1.8,
+    "process control": 1.8,
+    "metrology": 1.5,
+    "deposition": 1.5,
+    "etch": 1.5,
+    "die attach": 1.8,
+    "wire bond": 1.5,
+    "fan-out": 1.8,
+    "rdl": 1.8,
+    "warpage": 1.8,
     "semiconductor": 1.0,
     "chip": 0.8,
 }
@@ -137,6 +190,46 @@ LOW_VALUE_TERMS = {
     "technical analysis": 8.0,
     "consumer review": 8.0,
 }
+
+INDUSTRY_TERMS = (
+    "semiconductor",
+    "chip",
+    "chips",
+    "chipmaker",
+    "chipmaking",
+    "wafer",
+    "foundry",
+    "fab",
+    "fabs",
+    "process node",
+    "transistor",
+    "integrated circuit",
+    "microcontroller",
+    "mosfet",
+    "igbt",
+    "mems",
+    "image sensor",
+    "pressure sensor",
+    "silicon carbide",
+    "gallium nitride",
+    "photoresist",
+    "lithography",
+    "packaging",
+    "chiplet",
+    "die attach",
+    "wire bond",
+    "fan-out",
+    "rdl",
+)
+
+
+def _contains_term(value: str, term: str) -> bool:
+    return bool(
+        re.search(
+            rf"(?<![a-z0-9]){re.escape(term.lower())}(?![a-z0-9])",
+            value.lower(),
+        )
+    )
 
 
 def translate_if_needed(
@@ -173,12 +266,12 @@ def classify(article: Article) -> str:
     title = article.title.lower()
     for tag in CLASSIFICATION_ORDER:
         terms = TOPIC_RULES[tag]
-        if any(term in title for term in terms):
+        if any(_contains_term(title, term) for term in terms):
             return tag
     haystack = f"{article.title} {article.summary}".lower()
     for tag in CLASSIFICATION_ORDER:
         terms = TOPIC_RULES[tag]
-        if any(term in haystack for term in terms):
+        if any(_contains_term(haystack, term) for term in terms):
             return tag
     return "Supply Chain"
 
@@ -237,14 +330,21 @@ def prepare_articles(
     now: datetime,
     interests: dict[str, Any],
 ) -> list[Article]:
-    for article in articles:
+    relevant = [
+        article
+        for article in articles
+        if any(
+            _contains_term(f"{article.title} {article.summary}", term) for term in INDUSTRY_TERMS
+        )
+    ]
+    for article in relevant:
         article.fingerprint = fingerprint(article.title, article.url)
         article.tag = classify(article)
         article.score = score_article(article, now, interests)
         article.impact = (
             "CRITICAL" if article.score >= 13 else "HIGH" if article.score >= 9 else "WATCH"
         )
-    return deduplicate([article for article in articles if article.score >= 5])
+    return deduplicate([article for article in relevant if article.score >= 5])
 
 
 def apply_feedback(articles: list[Article], rules: list[tuple[str, str]]) -> list[Article]:
@@ -274,6 +374,8 @@ SPECIALTY_TAGS = {
     "Materials",
 }
 
+TECHNOLOGY_ADDENDUM_TAGS = {"Front-End Process", "Equipment"}
+
 LEADING_EDGE_TERMS = {
     "1.4nm",
     "1.6nm",
@@ -291,14 +393,35 @@ def select_balanced(
     maximum: int,
     mature_specialty_minimum: int,
     leading_edge_maximum: int,
+    packaging_addendum_maximum: int = 3,
+    technology_addendum_maximum: int = 3,
 ) -> list[Article]:
     ranked = sorted(articles, key=lambda item: item.score, reverse=True)
-    specialty = [item for item in ranked if item.tag in SPECIALTY_TAGS]
-    selected = specialty[: min(maximum, mature_specialty_minimum)]
-    selected_ids = {item.fingerprint for item in selected}
+    general = [
+        item
+        for item in ranked
+        if item.tag != "Packaging Technology" and item.tag not in TECHNOLOGY_ADDENDUM_TAGS
+    ]
+    selected: list[Article] = []
+    selected_ids: set[str] = set()
+
+    def reserve(candidates: list[Article], requested: int) -> None:
+        for item in candidates:
+            if requested <= 0:
+                return
+            if item.fingerprint in selected_ids:
+                continue
+            selected.append(item)
+            selected_ids.add(item.fingerprint)
+            requested -= 1
+
+    reserve(
+        [item for item in general if item.tag in SPECIALTY_TAGS],
+        min(maximum, mature_specialty_minimum),
+    )
     leading_count = 0
 
-    for article in ranked:
+    for article in general:
         if len(selected) >= maximum:
             break
         if article.fingerprint in selected_ids:
@@ -313,12 +436,21 @@ def select_balanced(
             leading_count += 1
 
     if len(selected) < maximum:
-        for article in ranked:
+        for article in general:
             if len(selected) >= maximum:
                 break
             if article.fingerprint not in selected_ids:
                 selected.append(article)
                 selected_ids.add(article.fingerprint)
+
+    reserve(
+        [item for item in ranked if item.tag == "Packaging Technology"],
+        packaging_addendum_maximum,
+    )
+    reserve(
+        [item for item in ranked if item.tag in TECHNOLOGY_ADDENDUM_TAGS],
+        technology_addendum_maximum,
+    )
     return selected
 
 
@@ -368,7 +500,14 @@ def why_it_matters(article: Article) -> str:
             "May affect optical connectivity, communications, sensing, "
             "and specialist material demand."
         ),
-        "Packaging": "Could change advanced-packaging capacity and accelerator supply.",
+        "Packaging Technology": (
+            "May affect assembly yield, package reliability, thermal performance, "
+            "materials, equipment, or OSAT capacity for customer products."
+        ),
+        "Front-End Process": (
+            "May improve wafer yield, process stability, throughput, cost, or equipment "
+            "requirements across mature and specialty production lines."
+        ),
         "AI Chips": (
             "May shift accelerator supply, performance competition, or data-center spending."
         ),

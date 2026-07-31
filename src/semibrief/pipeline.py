@@ -152,8 +152,10 @@ class Pipeline:
         selected = select_balanced(
             fresh,
             maximum=limit,
-            mature_specialty_minimum=int(mix.get("mature_specialty_minimum", 6)),
-            leading_edge_maximum=int(mix.get("leading_edge_maximum", 3)),
+            mature_specialty_minimum=int(mix.get("mature_specialty_minimum", 5)),
+            leading_edge_maximum=int(mix.get("leading_edge_maximum", 2)),
+            packaging_addendum_maximum=int(mix.get("packaging_addendum_maximum", 3)),
+            technology_addendum_maximum=int(mix.get("technology_addendum_maximum", 3)),
         )
         source_count = (
             len(self.sources.get("publishers", [])) + len(self.sources.get("direct_feeds", [])) + 1

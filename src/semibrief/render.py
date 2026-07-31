@@ -5,8 +5,32 @@ import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from .editor import SPECIALTY_TAGS, extractive_bullets, why_it_matters
+from .editor import (
+    SPECIALTY_TAGS,
+    TECHNOLOGY_ADDENDUM_TAGS,
+    extractive_bullets,
+    why_it_matters,
+)
 from .models import Article, Brief
+
+
+def _append_articles(
+    lines: list[str],
+    articles: list[Article],
+    relevance_label: str,
+    empty_message: str,
+) -> None:
+    for article in articles:
+        lines.extend(["", f"[{article.impact}] [{article.tag}] {article.title}"])
+        lines.extend(f"- {bullet}" for bullet in extractive_bullets(article))
+        lines.append(f"- {relevance_label}: {why_it_matters(article)}")
+        lines.append(f"- Source: {article.source} — {article.url}")
+        for link in article.corroborating_urls[:2]:
+            lines.append(f"- Corroborating source: {link}")
+        if article.language.startswith("translated"):
+            lines.append(f"- Translation: {article.language}")
+    if not articles:
+        lines.append(f"- {empty_message}")
 
 
 def _takeaways(articles: list[Article]) -> list[str]:
@@ -39,37 +63,45 @@ def build_brief(
         "EXECUTIVE TAKEAWAYS",
     ]
     lines.extend(f"- {item}" for item in _takeaways(articles))
-    lines.extend(["", "CORE CUSTOMER TECHNOLOGIES — 40/45 NM AND ABOVE & SPECIALTY"])
-
     top = [item for item in articles if not item.is_linkedin or item.linkedin_official]
     radar = [item for item in articles if item.is_linkedin and not item.linkedin_official]
     core = [item for item in top if item.tag in SPECIALTY_TAGS]
-    broader = [item for item in top if item.tag not in SPECIALTY_TAGS]
+    packaging = [item for item in top if item.tag == "Packaging Technology"]
+    technology = [item for item in top if item.tag in TECHNOLOGY_ADDENDUM_TAGS]
+    broader = [
+        item
+        for item in top
+        if item.tag not in SPECIALTY_TAGS | TECHNOLOGY_ADDENDUM_TAGS | {"Packaging Technology"}
+    ]
 
-    for article in core:
-        lines.extend(["", f"[{article.impact}] [{article.tag}] {article.title}"])
-        lines.extend(f"- {bullet}" for bullet in extractive_bullets(article))
-        lines.append(f"- Customer relevance: {why_it_matters(article)}")
-        lines.append(f"- Source: {article.source} — {article.url}")
-        for link in article.corroborating_urls[:2]:
-            lines.append(f"- Corroborating source: {link}")
-        if article.language.startswith("translated"):
-            lines.append(f"- Translation: {article.language}")
-    if not core:
-        lines.append("- No sufficiently material mature-node or specialty update was found.")
-
-    lines.extend(["", "LEADING-EDGE AND MARKET CONTEXT"])
-    for article in broader:
-        lines.extend(["", f"[{article.impact}] [{article.tag}] {article.title}"])
-        lines.extend(f"- {bullet}" for bullet in extractive_bullets(article))
-        lines.append(f"- Why it matters: {why_it_matters(article)}")
-        lines.append(f"- Source: {article.source} — {article.url}")
-        for link in article.corroborating_urls[:2]:
-            lines.append(f"- Corroborating source: {link}")
-        if article.language.startswith("translated"):
-            lines.append(f"- Translation: {article.language}")
-    if not broader:
-        lines.append("- No additional leading-edge or market-context item was selected.")
+    lines.extend(["", "CORE CUSTOMER TECHNOLOGIES — 40/45 NM AND ABOVE & SPECIALTY"])
+    _append_articles(
+        lines,
+        core,
+        "Customer relevance",
+        "No sufficiently material mature-node or specialty update was found.",
+    )
+    lines.extend(["", "GENERAL INDUSTRY AND MARKET NEWS"])
+    _append_articles(
+        lines,
+        broader,
+        "Why it matters",
+        "No additional general industry or market item was selected.",
+    )
+    lines.extend(["", "ADVANCED PACKAGING — 2–3 TECHNOLOGY UPDATES"])
+    _append_articles(
+        lines,
+        packaging[:3],
+        "Customer relevance",
+        "No sufficiently material packaging technology update was found.",
+    )
+    lines.extend(["", "SEMICONDUCTOR TECHNOLOGY — 2–3 UPDATES"])
+    _append_articles(
+        lines,
+        technology[:3],
+        "Customer relevance",
+        "No sufficiently material semiconductor technology update was found.",
+    )
     if radar:
         lines.extend(["", "RADAR"])
         for article in radar[:3]:
@@ -111,7 +143,9 @@ def _plain_to_html(value: str) -> str:
         elif raw in {
             "EXECUTIVE TAKEAWAYS",
             "CORE CUSTOMER TECHNOLOGIES — 40/45 NM AND ABOVE & SPECIALTY",
-            "LEADING-EDGE AND MARKET CONTEXT",
+            "GENERAL INDUSTRY AND MARKET NEWS",
+            "ADVANCED PACKAGING — 2–3 TECHNOLOGY UPDATES",
+            "SEMICONDUCTOR TECHNOLOGY — 2–3 UPDATES",
             "RADAR",
         }:
             rows.append(f"<h2>{escaped.title()}</h2>")

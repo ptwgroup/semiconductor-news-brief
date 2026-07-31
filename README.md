@@ -5,12 +5,18 @@ an LLM, OpenAI account, or per-run token cost. It discovers public reporting thr
 GDELT, RSS, Google News RSS, and configured public LinkedIn URLs; applies deterministic
 ranking and duplicate clustering; and produces extractive English bullet summaries.
 
-The default editorial balance is customer-led: at least six of ten available story slots
-are reserved for mature-node and specialty technologies when enough qualifying reporting
-exists. This includes commercial 40/45/55/65/90/110/130/180 nm-and-larger families,
+The general brief keeps ten independent story slots, with at least five reserved for
+mature-node and specialty technologies when enough reporting exists. It is followed by
+two separate addenda: up to three advanced-packaging updates and up to three broader
+semiconductor manufacturing/front-end technology updates. Addendum stories never displace
+the general news selected from the regional and industry source list.
+This includes commercial 40/45/55/65/90/110/130/180 nm-and-larger families,
 MEMS, sensors, analog/mixed-signal CMOS, BCD, RF, microcontrollers, SiC, GaN, IGBTs,
 MOSFETs, discretes, 200 mm capacity, supporting equipment/materials, and automotive or
-industrial qualification. Leading-edge AI, HBM and sub-5 nm news remains a context lane.
+industrial qualification. Packaging covers die attach, wire bonding, flip chip, RDL,
+fan-out/WLP, underfill, molding, substrates, warpage, thermal and inspection developments.
+Front-end covers cleaning, lithography, etch, deposition, implant, CMP, metrology and
+process control. Leading-edge AI, HBM and sub-5 nm news remains a context lane.
 
 ## What it monitors
 
@@ -18,8 +24,9 @@ The source configuration prioritizes Taipei Times, DigiTimes, Korea Herald, Yonh
 South China Morning Post, Straits Times, The Star, Handelsblatt, Reuters, Financial
 Times, EE Times, Semiconductor Engineering, IEEE Spectrum, US and European institutions,
 and relevant French, UK, Italian, Swiss, Swedish, Dutch, and Belgian sources.
-Specialist coverage includes Compound Semiconductor, Semiconductor Today, Power
-Electronics News, eeNews Europe, MEMS Journal, EDN, Electronic Design and relevant
+Specialist coverage includes Semiconductor Packaging News, 3D InCites, Chip Scale Review,
+Semiconductor Digest, Semiconductor Engineering, Compound Semiconductor, Semiconductor
+Today, Power Electronics News, eeNews Europe, MEMS Journal, EDN, Electronic Design and relevant
 company newsrooms such as Infineon, STMicroelectronics, NXP, Texas Instruments, onsemi,
 Renesas, ROHM, UMC, Tower Semiconductor and X-FAB.
 

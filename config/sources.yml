@@ -8,7 +8,12 @@ discovery:
       OR "wafer fab" OR "mature node" OR "legacy node" OR "specialty CMOS"
       OR "analog semiconductor" OR "mixed signal" OR "power semiconductor"
       OR "silicon carbide" OR "gallium nitride" OR "MEMS" OR "sensor fab"
-      OR "IGBT" OR "MOSFET" OR "microcontroller" OR "200mm fab")
+      OR "IGBT" OR "MOSFET" OR "microcontroller" OR "200mm fab"
+      OR "semiconductor packaging" OR "wafer-level packaging" OR "fan-out"
+      OR "redistribution layer" OR "die attach" OR "wire bond" OR "underfill"
+      OR "package warpage" OR "front-end process" OR "wafer cleaning"
+      OR "dry etch" OR "deposition" OR "ion implantation" OR "CMP"
+      OR "process control" OR "wafer metrology" OR "defect inspection")
   google_news:
     # Optional fallback. Disabled because results often use aggregator URLs
     # instead of canonical publisher URLs.
@@ -23,6 +28,8 @@ discovery:
       - mature node analog power semiconductor when:1d
       - MEMS sensor semiconductor when:1d
       - SiC GaN IGBT MOSFET when:1d
+      - semiconductor packaging RDL die attach wire bond warpage when:1d
+      - semiconductor front-end etch deposition cleaning CMP metrology when:1d
 
 quality:
   allow_unlisted_publishers: false
@@ -41,6 +48,10 @@ publishers:
   - {name: Financial Times, domain: ft.com, region: Global, priority: 5}
   - {name: EE Times, domain: eetimes.com, region: United States, priority: 5}
   - {name: Semiconductor Engineering, domain: semiengineering.com, region: United States, priority: 5}
+  - {name: Semiconductor Packaging News, domain: semiconductorpackagingnews.com, region: United States, priority: 5}
+  - {name: 3D InCites, domain: 3dincites.com, region: United States, priority: 5}
+  - {name: Chip Scale Review, domain: chipscalereview.com, region: United States, priority: 4}
+  - {name: Semiconductor Digest, domain: semiconductor-digest.com, region: United States, priority: 5}
   - {name: IEEE Spectrum, domain: spectrum.ieee.org, region: United States, priority: 4}
   - {name: Semiconductor Industry Association, domain: semiconductors.org, region: United States, priority: 5}
   - {name: EE Times Europe, domain: eetimes.eu, region: Europe, priority: 5}
@@ -87,6 +98,14 @@ direct_feeds:
     priority: 5
   - name: Semiconductor Engineering
     url: https://semiengineering.com/feed/
+    region: United States
+    priority: 5
+  - name: 3D InCites
+    url: https://www.3dincites.com/feed/
+    region: United States
+    priority: 5
+  - name: Semiconductor Digest
+    url: https://www.semiconductor-digest.com/feed/
     region: United States
     priority: 5
   - name: IEEE Spectrum

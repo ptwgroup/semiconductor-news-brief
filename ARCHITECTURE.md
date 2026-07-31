@@ -11,11 +11,13 @@
    is configured. Otherwise they are excluded from the English brief.
 5. URL normalization, headline similarity, and sent fingerprints remove duplicates.
 6. Transparent keyword, source, freshness, company, topic, and regional weights rank
-   the remaining stories. A coverage-mix selector reserves six of ten available slots
-   for mature-node and specialty technologies when enough qualifying stories exist,
-   while limiting leading-edge items before any empty-slot fallback.
+   the remaining stories. A coverage-mix selector builds the ten-story general brief,
+   protecting mature-node/specialty coverage and limiting leading-edge items. Separate
+   selectors then append up to three packaging and three semiconductor-technology
+   updates without consuming general-news slots.
 7. Deterministic sentence extraction creates up to two factual bullets. A topic-specific
-   template adds the "Why it matters" line.
+   template adds the "Why it matters" line. Packaging and manufacturing-technology
+   addenda are rendered after the complete general brief.
 8. The renderer produces plain text, HTML, and JSON. SMTP sends a multipart email.
 9. Only successful SMTP acceptance advances the last-success timestamp.
 
@@ -46,6 +48,7 @@ The score is additive and inspectable:
 
 Mature/specialty tags cover 40/45/55/65/90/110/130/180 nm families, MEMS and sensors,
 power devices, analog/mixed-signal, photonics/RF, automotive, and relevant materials.
+Separate packaging and standard front-end tags keep manufacturing technology visible.
 The exact mix is editable in `config/interests.yml`.
 
 `CRITICAL >= 13`, `HIGH >= 9`, and `WATCH < 9`. Items below 5 are discarded.
