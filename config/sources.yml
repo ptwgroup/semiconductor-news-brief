@@ -34,6 +34,30 @@ discovery:
 quality:
   allow_unlisted_publishers: false
 
+regional_news:
+  # A separate domain-restricted GDELT pass prevents specialist feeds from
+  # crowding newspapers out before ranking. Previously sent stories are skipped.
+  lookback_hours: 168
+  minimum_stories: 3
+  google_news_fallback: true
+  sources:
+    - Taipei Times
+    - Korea Herald
+    - Yonhap
+    - South China Morning Post
+    - Straits Times
+    - The Star
+    - Handelsblatt
+    - Reuters
+    - Financial Times
+    - Les Echos
+    - Le Monde
+    - The Register
+    - Il Sole 24 Ore
+    - Neue Zürcher Zeitung
+    - Dagens Industri
+    - Het Financieele Dagblad
+
 publishers:
   - {name: Taipei Times, domain: taipeitimes.com, region: Taiwan, priority: 4}
   - {name: DigiTimes, domain: digitimes.com, region: Taiwan, priority: 5}

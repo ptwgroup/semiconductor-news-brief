@@ -395,6 +395,8 @@ def select_balanced(
     leading_edge_maximum: int,
     packaging_addendum_maximum: int = 3,
     technology_addendum_maximum: int = 3,
+    regional_news_minimum: int = 0,
+    regional_news_sources: set[str] | None = None,
 ) -> list[Article]:
     ranked = sorted(articles, key=lambda item: item.score, reverse=True)
     general = [
@@ -415,9 +417,16 @@ def select_balanced(
             selected_ids.add(item.fingerprint)
             requested -= 1
 
+    regional_sources = {name.casefold() for name in (regional_news_sources or set())}
+    reserve(
+        [item for item in general if item.source.casefold() in regional_sources],
+        min(maximum, regional_news_minimum),
+    )
+
+    specialty_already_selected = sum(item.tag in SPECIALTY_TAGS for item in selected)
     reserve(
         [item for item in general if item.tag in SPECIALTY_TAGS],
-        min(maximum, mature_specialty_minimum),
+        min(maximum, max(0, mature_specialty_minimum - specialty_already_selected)),
     )
     leading_count = 0
 

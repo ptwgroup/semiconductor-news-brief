@@ -84,6 +84,8 @@ excluded_topics:
 maximum_stories: 10
 preferred_detail: concise
 coverage_mix:
+  # Newspaper/company developments are mixed into the ten-story general brief.
+  # The source list and seven-day unsent-story lookback live in sources.yml.
   # Mature/specialty stories are the core brief, not a secondary appendix.
   mature_specialty_minimum: 5
   leading_edge_maximum: 2

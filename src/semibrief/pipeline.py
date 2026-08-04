@@ -62,6 +62,22 @@ class Pipeline:
 
     def collect(self, start: datetime, end: datetime) -> list[Article]:
         publishers = list(self.sources.get("publishers", []))
+        regional_news = self.sources.get("regional_news", {})
+        regional_source_names = {
+            self._normalize_source(str(name)) for name in regional_news.get("sources", [])
+        }
+        regional_publishers = [
+            publisher
+            for publisher in publishers
+            if self._normalize_source(str(publisher["name"])) in regional_source_names
+        ]
+        regional_start = end - timedelta(
+            hours=max(24, int(regional_news.get("lookback_hours", 168)))
+        )
+        publisher_by_alias = {}
+        for publisher in publishers:
+            publisher_by_alias[self._normalize_source(str(publisher["name"]))] = publisher
+            publisher_by_alias[self._normalize_source(str(publisher["domain"]))] = publisher
         trusted_sources = {self._normalize_source(str(item["name"])) for item in publishers} | {
             self._normalize_source(str(item["name"]))
             for item in self.sources.get("direct_feeds", [])
@@ -84,6 +100,27 @@ class Pipeline:
                     articles.extend(fetch_gdelt(client, gdelt, publishers, hours))
                 except (httpx.HTTPError, ValueError, KeyError) as exc:
                     LOGGER.warning("GDELT collection failed: %s", exc)
+                if regional_publishers:
+                    regional_gdelt = dict(gdelt)
+                    domains = " OR ".join(
+                        f"domain:{publisher['domain']}" for publisher in regional_publishers
+                    )
+                    regional_gdelt["query"] = f"({gdelt['query']}) AND ({domains})"
+                    regional_hours = max(
+                        hours,
+                        int((end - regional_start).total_seconds() / 3600) + 2,
+                    )
+                    try:
+                        articles.extend(
+                            fetch_gdelt(
+                                client,
+                                regional_gdelt,
+                                regional_publishers,
+                                regional_hours,
+                            )
+                        )
+                    except (httpx.HTTPError, ValueError, KeyError) as exc:
+                        LOGGER.warning("Regional GDELT collection failed: %s", exc)
             google = discovery.get("google_news", {})
             if google.get("enabled", False):
                 for query in google.get("queries", []):
@@ -96,6 +133,21 @@ class Pipeline:
                         articles.extend(fetch_feed(client, url, "Google News", "Global", 2))
                     except (httpx.HTTPError, ValueError) as exc:
                         LOGGER.warning("Google News query failed: %s", exc)
+            if regional_publishers and regional_news.get("google_news_fallback", True):
+                sites = " OR ".join(
+                    f"site:{publisher['domain']}" for publisher in regional_publishers
+                )
+                hours = max(24, int(regional_news.get("lookback_hours", 168)))
+                days = max(1, (hours + 23) // 24)
+                query = (
+                    f"({sites}) (semiconductor OR chipmaker OR wafer fab OR MEMS "
+                    f'OR "power semiconductor" OR packaging) when:{days}d'
+                )
+                try:
+                    url = google_news_url(query, "en", "SG")
+                    articles.extend(fetch_feed(client, url, "Google News Regional", "Global", 4))
+                except (httpx.HTTPError, ValueError) as exc:
+                    LOGGER.warning("Regional Google News collection failed: %s", exc)
             for feed in self.sources.get("direct_feeds", []):
                 try:
                     articles.extend(
@@ -118,7 +170,20 @@ class Pipeline:
 
             translated = []
             for article in articles:
-                if not (start <= article.published_at <= end + timedelta(minutes=5)):
+                normalized_source = self._normalize_source(article.source)
+                publisher = publisher_by_alias.get(normalized_source)
+                if publisher is not None:
+                    article.source = str(publisher["name"])
+                    article.region = str(publisher.get("region", "Global"))
+                    article.source_priority = max(
+                        article.source_priority,
+                        int(publisher.get("priority", 3)),
+                    )
+                    normalized_source = self._normalize_source(article.source)
+                article_start = (
+                    regional_start if normalized_source in regional_source_names else start
+                )
+                if not (article_start <= article.published_at <= end + timedelta(minutes=5)):
                     continue
                 try:
                     result = translate_if_needed(
@@ -156,6 +221,12 @@ class Pipeline:
             leading_edge_maximum=int(mix.get("leading_edge_maximum", 2)),
             packaging_addendum_maximum=int(mix.get("packaging_addendum_maximum", 3)),
             technology_addendum_maximum=int(mix.get("technology_addendum_maximum", 3)),
+            regional_news_minimum=int(
+                self.sources.get("regional_news", {}).get("minimum_stories", 3)
+            ),
+            regional_news_sources={
+                str(name) for name in self.sources.get("regional_news", {}).get("sources", [])
+            },
         )
         source_count = (
             len(self.sources.get("publishers", [])) + len(self.sources.get("direct_feeds", [])) + 1

@@ -158,3 +158,31 @@ def test_balanced_selection_appends_packaging_and_technology() -> None:
     assert sum(item.tag == "Mature Nodes" for item in result) == 5
     assert sum(item.tag == "Packaging Technology" for item in result) == 2
     assert sum(item.tag == "Front-End Process" for item in result) == 3
+
+
+def test_balanced_selection_reserves_regional_newspaper_slots() -> None:
+    items = []
+    for index in range(5):
+        item = article(f"Specialist item {index}", f"https://specialist.test/{index}")
+        item.fingerprint = f"specialist-{index}"
+        item.source = "Semiconductor Digest"
+        item.score = 20 - index
+        items.append(item)
+
+    for index, source in enumerate(("Taipei Times", "The Star")):
+        item = article(f"Regional company item {index}", f"https://regional.test/{index}")
+        item.fingerprint = f"regional-{index}"
+        item.source = source
+        item.score = 8 - index
+        items.append(item)
+
+    result = select_balanced(
+        items,
+        maximum=5,
+        mature_specialty_minimum=0,
+        leading_edge_maximum=2,
+        regional_news_minimum=2,
+        regional_news_sources={"Taipei Times", "The Star"},
+    )
+
+    assert {item.source for item in result[:2]} == {"Taipei Times", "The Star"}
